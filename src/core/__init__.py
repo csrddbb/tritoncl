@@ -1,1 +1,1 @@
-from src.core.tensor import TritonTensor
+from .tensor import TritonTensor
