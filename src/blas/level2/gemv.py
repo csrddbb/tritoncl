@@ -7,7 +7,7 @@ from src.utils import tools
 
 def get_cuda_autotune_config():
     return [
-        triton.Config({'BLOCK_SIZE_M': 64, 'BLOCK_SIZE_K': 32, 'GROUP_SIZE_M': 8}, num_stages=4,
+        triton.Config({'BLOCK_SIZE_M': 64, 'BLOCK_SIZE_K': 64, 'GROUP_SIZE_M': 8}, num_stages=4,
                       num_warps=4)
     ]
 
@@ -44,12 +44,13 @@ def gemv_kernel(
     pid_m = first_pid_m + ((pid % num_pid_in_group) % group_size_m)
     
     offs_am = (pid_m * BLOCK_SIZE_M + tl.arange(0, BLOCK_SIZE_M)) % M
+    offs_bn = tl.arange(0, 16) % 1
     offs_k = tl.arange(0, BLOCK_SIZE_K)
     
     a_ptrs = a_ptr + (offs_am[:, None] * stride_am + offs_k[None, :] * stride_ak)
-    b_ptrs = b_ptr + offs_k[:, None] * stride_ak
+    b_ptrs = b_ptr + offs_k[:, None] * stride_ak + offs_bn[None, :]
     
-    accumulator = tl.zeros((BLOCK_SIZE_M, 1), dtype=tl.float32)
+    accumulator = tl.zeros((BLOCK_SIZE_M, 16), dtype=tl.float32)
     for k in range(0, tl.cdiv(K, BLOCK_SIZE_K)):
         a = tl.load(a_ptrs, mask=offs_k[None, :] < K - k * BLOCK_SIZE_K, other=0.0)
         b = tl.load(b_ptrs, mask=offs_k[:, None] < K - k * BLOCK_SIZE_K, other=0.0)
@@ -59,8 +60,9 @@ def gemv_kernel(
     c = accumulator.to(tl.float16)
     
     offs_cm = pid_m * BLOCK_SIZE_M + tl.arange(0, BLOCK_SIZE_M)
-    c_ptrs = c_ptr + offs_cm[:, None]
-    c_mask = (offs_cm[:, None] < M)
+    offs_cn = tl.arange(0, 16)
+    c_ptrs = c_ptr + offs_cm[:, None] + offs_cn[None, :]
+    c_mask = (offs_cm[:, None] < M) & (offs_cn[None, :] < 1)
     tl.store(c_ptrs, c, mask=c_mask)
 
 def gemv(a, b, activation=""): 
@@ -68,7 +70,7 @@ def gemv(a, b, activation=""):
     M, K = a.shape
     c = torch.empty((M, 1), device=a.device, dtype=torch.float16)
     
-    grid = lambda META: (triton.cdiv(M, META['BLOCK_SIZE_M']))
+    grid = lambda META: (triton.cdiv(M, META['BLOCK_SIZE_M']),)
     gemv_kernel[grid](
         a, b, c,
         M, K,
@@ -91,3 +93,34 @@ if torch.allclose(triton_output, torch_output, atol=1e-2, rtol=rtol):
     print("✅ Triton and Torch match")
 else:
     print("❌ Triton and Torch differ")
+
+ref_lib = 'cuBLAS'
+
+configs = []
+configs.append(
+    triton.testing.Benchmark(
+        x_names=["M", "K"],
+        x_vals=[[128 * i, 128 * i] for i in range(2, 32)],
+        line_arg="provider",
+        line_vals=[ref_lib.lower(), "triton"],  # Label name for the lines
+        line_names=[ref_lib, "Triton"],  # Line styles
+        styles=[("green", "-"), ("blue", "-")],
+        ylabel="TFLOPS",  # Label name for the y-axis
+        plot_name="matmul-performance-" + "fp16",
+        args={}
+    )
+)
+
+@triton.testing.perf_report(configs)
+def benchmark(M, K, provider):
+    a = torch.randn((M, K), device='cuda', dtype=torch.float16)
+    b = torch.randn((K, 1), device='cuda', dtype=torch.float16)
+    quantiles = [0.5, 0.2, 0.8]
+    if provider == ref_lib.lower():
+        ms, min_ms, max_ms = triton.testing.do_bench(lambda: torch.matmul(a, b), quantiles=quantiles)
+    if provider == 'triton':
+        ms, min_ms, max_ms = triton.testing.do_bench(lambda: gemv(a, b), quantiles=quantiles)
+    perf = lambda ms: 2 * M * K * 1e-12 / (ms * 1e-3)
+    return perf(ms), perf(max_ms), perf(min_ms)
+
+benchmark.run(show_plots=True, print_data=True)
