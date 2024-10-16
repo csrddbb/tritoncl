@@ -1,5 +1,8 @@
-import sys
-import os
+from setuptools import setup, find_packages
 
-source_root = os.path.abspath(os.path.dirname(__file__))
-sys.path.append(os.path.join(source_root))
+setup(
+    name='tritoncl',
+    version='0.1',
+    packages=find_packages(where='src'),
+    package_dir={'': 'src'},
+)

@@ -3,7 +3,7 @@ import triton
 import triton.language as tl
 
 import sys
-from src.utils import tools
+from utils import tools
 
 def get_cuda_autotune_config():
     return [
@@ -79,48 +79,48 @@ def gemv(a, b, activation=""):
     )
     return c
 
-torch.manual_seed(0)
-a = torch.randn((256, 256), device='cuda', dtype=torch.float16)
-b = torch.randn((256, 1), device='cuda', dtype=torch.float16)
-triton_output = gemv(a, b)
-torch_output = torch.matmul(a, b)
+# torch.manual_seed(0)
+# a = torch.randn((256, 256), device='cuda', dtype=torch.float16)
+# b = torch.randn((256, 1), device='cuda', dtype=torch.float16)
+# triton_output = gemv(a, b)
+# torch_output = torch.matmul(a, b)
 
-print(f"triton_output_with_fp16_inputs={triton_output}")
-print(f"torch_output_with_fp16_inputs={torch_output}")
+# print(f"triton_output_with_fp16_inputs={triton_output}")
+# print(f"torch_output_with_fp16_inputs={torch_output}")
 
-rtol = 0
-if torch.allclose(triton_output, torch_output, atol=1e-2, rtol=rtol):
-    print("✅ Triton and Torch match")
-else:
-    print("❌ Triton and Torch differ")
+# rtol = 0
+# if torch.allclose(triton_output, torch_output, atol=1e-2, rtol=rtol):
+#     print("✅ Triton and Torch match")
+# else:
+#     print("❌ Triton and Torch differ")
 
-ref_lib = 'cuBLAS'
+# ref_lib = 'cuBLAS'
 
-configs = []
-configs.append(
-    triton.testing.Benchmark(
-        x_names=["M", "K"],
-        x_vals=[[128 * i, 128 * i] for i in range(2, 32)],
-        line_arg="provider",
-        line_vals=[ref_lib.lower(), "triton"],  # Label name for the lines
-        line_names=[ref_lib, "Triton"],  # Line styles
-        styles=[("green", "-"), ("blue", "-")],
-        ylabel="TFLOPS",  # Label name for the y-axis
-        plot_name="matmul-performance-" + "fp16",
-        args={}
-    )
-)
+# configs = []
+# configs.append(
+#     triton.testing.Benchmark(
+#         x_names=["M", "K"],
+#         x_vals=[[128 * i, 128 * i] for i in range(2, 32)],
+#         line_arg="provider",
+#         line_vals=[ref_lib.lower(), "triton"],  # Label name for the lines
+#         line_names=[ref_lib, "Triton"],  # Line styles
+#         styles=[("green", "-"), ("blue", "-")],
+#         ylabel="TFLOPS",  # Label name for the y-axis
+#         plot_name="matmul-performance-" + "fp16",
+#         args={}
+#     )
+# )
 
-@triton.testing.perf_report(configs)
-def benchmark(M, K, provider):
-    a = torch.randn((M, K), device='cuda', dtype=torch.float16)
-    b = torch.randn((K, 1), device='cuda', dtype=torch.float16)
-    quantiles = [0.5, 0.2, 0.8]
-    if provider == ref_lib.lower():
-        ms, min_ms, max_ms = triton.testing.do_bench(lambda: torch.matmul(a, b), quantiles=quantiles)
-    if provider == 'triton':
-        ms, min_ms, max_ms = triton.testing.do_bench(lambda: gemv(a, b), quantiles=quantiles)
-    perf = lambda ms: 2 * M * K * 1e-12 / (ms * 1e-3)
-    return perf(ms), perf(max_ms), perf(min_ms)
+# @triton.testing.perf_report(configs)
+# def benchmark(M, K, provider):
+#     a = torch.randn((M, K), device='cuda', dtype=torch.float16)
+#     b = torch.randn((K, 1), device='cuda', dtype=torch.float16)
+#     quantiles = [0.5, 0.2, 0.8]
+#     if provider == ref_lib.lower():
+#         ms, min_ms, max_ms = triton.testing.do_bench(lambda: torch.matmul(a, b), quantiles=quantiles)
+#     if provider == 'triton':
+#         ms, min_ms, max_ms = triton.testing.do_bench(lambda: gemv(a, b), quantiles=quantiles)
+#     perf = lambda ms: 2 * M * K * 1e-12 / (ms * 1e-3)
+#     return perf(ms), perf(max_ms), perf(min_ms)
 
-benchmark.run(show_plots=True, print_data=True)
+# benchmark.run(show_plots=True, print_data=True)
