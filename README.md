@@ -86,7 +86,6 @@ python benchmarks/benchmark_gemm.py
 
 ## Implemented Operators
 ### Level 1 BLAS
-| Level 1 BLAS |
 | Routine            | Signature                                 |   Implemented |
 |--------------------|--------------------------------------------|:--------------:|
 | xROTG              | A, B, C, S                                | |
@@ -103,9 +102,6 @@ python benchmarks/benchmark_gemm.py
 | xxDOT              | N, X, INCX, Y, INCY                        | |
 | xNRM2              | N, X, INCX                                 | |
 | xASUM              | N, X, INCX                                 | |
-| Level 2 BLAS |
-| Routine            | Signature                                 |   Implemented |
-|--------------------|--------------------------------------------|:--------------:|
 | xGEMV              | TRANS, M, N, ALPHA, A, LDA, X, INCX, BETA, Y, INCY |  <span style="color:green">&#10004;</span> |
 | xGBMV              | TRANS, M, N, KL, KU, ALPHA, A, LDA, X, INCX, BETA, Y, INCY ||
 | xHEMV              | UPLO, N, ALPHA, A, LDA, X, INCX, BETA, Y, INCY ||
@@ -130,10 +126,7 @@ python benchmarks/benchmark_gemm.py
 | xSYR               | UPLO, N, ALPHA, X, INCX, A, LDA ||
 | xSPR               | UPLO, N, ALPHA, X, INCX, AP ||
 | xSYR2              | UPLO, N, ALPHA, X, INCX, Y, INCY, A, LDA ||
-| Level 3 BLAS |
-| Routine            | Signature                                 |   Implemented |
-|--------------------|--------------------------------------------|:--------------:|
-| xGEMM              | TRANSA, TRANSB, M, N, K, ALPHA, A, LDA, B, LDB, BETA, C, LDC ||
+| xGEMM              | TRANSA, TRANSB, M, N, K, ALPHA, A, LDA, B, LDB, BETA, C, LDC |  <span style="color:green">&#10004;</span> |
 | xSYMM              | SIDE, UPLO, M, N, ALPHA, A, LDA, B, LDB, BETA, C, LDC ||
 | xHEMM              | SIDE, UPLO, M, N, ALPHA, A, LDA, B, LDB, BETA, C, LDC ||
 | xSYRK               | UPLO, TRANS, N, K, ALPHA, A, LDA, BETA, C, LDC ||
