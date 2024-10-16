@@ -1,9 +1,9 @@
 
-# Triton-BLAS
+# TritonCL
 - [English](README.md)
 - [简体中文](README_CN.md)
 
-Triton-BLAS is a high-performance library implementing all BLAS (Basic Linear Algebra Subprograms) functions and some AI operations using the Triton deep learning compiler. This library is designed for scientific computing and AI workloads, leveraging the power of modern GPUs for efficient computations.
+TritonCL is a high-performance library implementing all BLAS (Basic Linear Algebra Subprograms) functions and some AI operations using the Triton deep learning compiler. This library is designed for scientific computing and AI workloads, leveraging the power of modern GPUs for efficient computations.
 
 ## Features
 - **BLAS Level 1**: Vector operations (AXPY, DOT, NRM2, etc.)

@@ -3,12 +3,12 @@
 # import level 1 operators
 
 # import level 2 operators
-from .blas_ops.level2.gemv import blas_gemv
+from .blas_ops.level2.gemv import gemv
 
 # import level 3 operators
-from .blas_ops.level3.gemm import blas_gemm
+from .blas_ops.level3.gemm import gemm
 
 __all__ = [
-    'blas_gemv',
-    'blas_gemm'
+    'gemv',
+    'gemm'
 ]

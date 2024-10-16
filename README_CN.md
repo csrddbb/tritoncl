@@ -1,9 +1,9 @@
 
-# Triton-BLAS
+# TritonCL
 - [English](README.md)
 - [简体中文](README_CN.md)
 
-Triton-BLAS 是一个高性能库，使用 Triton 深度学习编译器实现了全部 BLAS（基础线性代数子程序）函数和一些 AI 操作。该库为科学计算和 AI 工作负载而设计，利用现代 GPU 的计算能力来实现高效计算。
+TritonCL 是一个高性能库，使用 Triton 深度学习编译器实现了全部 BLAS（基础线性代数子程序）函数和一些 AI 操作。该库为科学计算和 AI 工作负载而设计，利用现代 GPU 的计算能力来实现高效计算。
 
 ## 功能
 - **BLAS Level 1**: 向量操作（AXPY，DOT，NRM2 等）
