@@ -85,7 +85,7 @@ python benchmarks/benchmark_gemm.py
 ```
 
 ## Implemented Operators
-### Level 1 BLAS
+### BLAS
 | Routine            | Signature                                 |   Implemented |
 |--------------------|--------------------------------------------|:--------------:|
 | xROTG              | A, B, C, S                                | |
