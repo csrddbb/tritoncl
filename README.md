@@ -84,6 +84,69 @@ Performance benchmarks are available in the `benchmarks/` directory. For example
 python benchmarks/benchmark_gemm.py
 ```
 
+## Implemented Operators
+### Level 1 BLAS
+
+| Routine            | Signature                                 |   Implemented |
+|--------------------|--------------------------------------------|--------------|
+| xROTG              | A, B, C, S                                | |
+| xROTMG             | D1, D2, A, B, PARAM                        | |
+| xROT               | N, X, INCX, Y, INCY, C, S                  | |
+| xROTM              | N, X, INCX, Y, INCY, PARAM                 | |
+| xSWAP              | N, X, INCX, Y, INCY                        | |
+| xSCAL              | N, ALPHA, X, INCX                          | |
+| xCOPY              | N, X, INCX, Y, INCY                        | |
+| xAXPY              | N, ALPHA, X, INCX, Y, INCY                | |
+| xDOT               | N, X, INCX, Y, INCY                        | |
+| xDOTU              | N, X, INCX, Y, INCY                        | |
+| xDOTC              | N, X, INCX, Y, INCY                        | |
+| xxDOT              | N, X, INCX, Y, INCY                        | |
+| xNRM2              | N, X, INCX                                 | |
+| xASUM              | N, X, INCX                                 | |
+
+### Level 2 BLAS
+
+| Routine            | Signature                                 |   Implemented |
+|--------------------|--------------------------------------------|--------------|
+| xGEMV              | TRANS, M, N, ALPHA, A, LDA, X, INCX, BETA, Y, INCY |  <span style="color:green">&#10004;</span> |
+| xGBMV              | TRANS, M, N, KL, KU, ALPHA, A, LDA, X, INCX, BETA, Y, INCY ||
+| xHEMV              | UPLO, N, ALPHA, A, LDA, X, INCX, BETA, Y, INCY ||
+| xHBMV              | UPLO, N, K, ALPHA, A, LDA, X, INCX, BETA, Y, INCY ||
+| xHPMV              | UPLO, N, ALPHA, AP, X, INCX, BETA, Y, INCY ||
+| xSYMV              | UPLO, N, ALPHA, A, LDA, X, INCX, BETA, Y, INCY ||
+| xSBMV              | UPLO, N, K, ALPHA, A, LDA, X, INCX, BETA, Y, INCY ||
+| xSPMV              | UPLO, N, ALPHA, AP, X, INCX, BETA, Y, INCY ||
+| xTRMV              | UPLO, TRANS, DIAG, N, A, LDA, X, INCX ||
+| xTBMV              | UPLO, TRANS, DIAG, N, K, A, LDA, X, INCX ||
+| xTPMV              | UPLO, TRANS, DIAG, N, AP, X, INCX ||
+| xTRSV              | UPLO, TRANS, DIAG, N, A, LDA, X, INCX ||
+| xTBSV              | UPLO, TRANS, DIAG, N, K, A, LDA, X, INCX ||
+| xTPSV              | UPLO, TRANS, DIAG, N, AP, X, INCX ||
+| xGER               | M, N, ALPHA, X, INCX, Y, INCY, A, LDA ||
+| xGERU              | M, N, ALPHA, X, INCX, Y, INCY, A, LDA ||
+| xGERC              | M, N, ALPHA, X, INCX, Y, INCY, A, LDA ||
+| xHER               | UPLO, N, ALPHA, X, INCX, A, LDA ||
+| xHPR               | UPLO, N, ALPHA, X, INCX, AP ||
+| xHER2              | UPLO, N, ALPHA, X, INCX, Y, INCY, A, LDA ||
+| xHPR2              | UPLO, N, ALPHA, X, INCX, Y, INCY, AP ||
+| xSYR               | UPLO, N, ALPHA, X, INCX, A, LDA ||
+| xSPR               | UPLO, N, ALPHA, X, INCX, AP ||
+| xSYR2              | UPLO, N, ALPHA, X, INCX, Y, INCY, A, LDA ||
+
+### Level 3 BLAS
+
+| Routine            | Signature                                 |   Implemented |
+|--------------------|--------------------------------------------|--------------|
+| xGEMM              | TRANSA, TRANSB, M, N, K, ALPHA, A, LDA, B, LDB, BETA, C, LDC ||
+| xSYMM              | SIDE, UPLO, M, N, ALPHA, A, LDA, B, LDB, BETA, C, LDC ||
+| xHEMM              | SIDE, UPLO, M, N, ALPHA, A, LDA, B, LDB, BETA, C, LDC ||
+| xSYRK               | UPLO, TRANS, N, K, ALPHA, A, LDA, BETA, C, LDC ||
+| xHERK              | UPLO, TRANS, N, K, ALPHA, A, LDA, BETA, C, LDC ||
+| xSYR2K             | UPLO, TRANS, N, K, ALPHA, A, LDA, B, LDB, BETA, C, LDC ||
+| xHER2K             | UPLO, TRANS, N, K, ALPHA, A, LDA, B, LDB, BETA, C, LDC ||
+| xTRMM              | SIDE, UPLO, TRANSA, DIAG, M, N, ALPHA, A, LDA, B, LDB ||
+| xTRSM              | SIDE, UPLO, TRANSA, DIAG, M, N, ALPHA, A, LDA, B, LDB ||
+
 ## Contributing
 
 Contributions are welcome! If you wish to contribute, please follow these steps:
